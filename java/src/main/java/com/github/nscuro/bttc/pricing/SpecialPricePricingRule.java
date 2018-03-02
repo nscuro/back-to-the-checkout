@@ -24,7 +24,7 @@ public final class SpecialPricePricingRule implements PricingRule {
     /**
      * @param sku              The SKU this rule shall apply to
      * @param requiredQuantity Amount of items required for this rule to apply
-     * @param discount         The discount price per rule application in the currencies smallest unit
+     * @param discount         The discount price per rule application in the currency's smallest unit
      */
     public SpecialPricePricingRule(final String sku, final int requiredQuantity, final int discount) {
         this.sku = sku;

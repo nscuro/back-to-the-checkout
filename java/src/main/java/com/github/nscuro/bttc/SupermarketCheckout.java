@@ -22,6 +22,11 @@ public final class SupermarketCheckout implements Checkout {
 
     private final Map<Item, Integer> items;
 
+    /**
+     * @param itemRepository The repository to source {@link Item}s from
+     * @param pricingRules   The {@link PricingRule}s to apply when calculating the total price.
+     *                       Rules are prioritized implicitly by their order in the given list.
+     */
     public SupermarketCheckout(final ItemRepository itemRepository,
                                final List<PricingRule> pricingRules) {
         this.itemRepository = itemRepository;
@@ -29,6 +34,9 @@ public final class SupermarketCheckout implements Checkout {
         this.items = new HashMap<>();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void scan(final String sku) {
         final Item item = itemRepository.findBySku(sku)
@@ -41,6 +49,9 @@ public final class SupermarketCheckout implements Checkout {
         items.put(item, currentItemQuantity + 1);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getTotalPrice() {
         return items

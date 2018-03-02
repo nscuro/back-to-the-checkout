@@ -11,10 +11,14 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 @DisplayName("The supermarket checkout")
 class SupermarketCheckoutTest {
@@ -87,6 +91,51 @@ class SupermarketCheckoutTest {
 
             checkout.scan("B");
             assertThat(checkout.getTotalPrice()).isEqualTo(175);
+        }
+
+    }
+
+    @Nested
+    class ScanTest {
+
+        private ItemRepository itemRepositoryMock;
+
+        private SupermarketCheckout checkout;
+
+        @BeforeEach
+        void beforeEach() {
+            itemRepositoryMock = mock(ItemRepository.class);
+
+            checkout = new SupermarketCheckout(itemRepositoryMock);
+        }
+
+        @Test
+        @DisplayName("should increase the item's quantity when the same SKU has been scanned before")
+        void testWithExistingItem() {
+            final Item item = new Item("X", 333);
+
+            given(itemRepositoryMock.findBySku("X"))
+                    .willReturn(Optional.of(item));
+
+            assertThat(checkout.getItems().get(item)).isNull();
+
+            checkout.scan("X");
+
+            assertThat(checkout.getItems().get(item)).isEqualTo(1);
+
+            checkout.scan("X");
+
+            assertThat(checkout.getItems().get(item)).isEqualTo(2);
+        }
+
+        @Test
+        @DisplayName("should throw an exception when no item was found for the SKU provided")
+        void testWithNonExistingItem() {
+            given(itemRepositoryMock.findBySku("X"))
+                    .willReturn(Optional.empty());
+
+            assertThatExceptionOfType(NoSuchElementException.class)
+                    .isThrownBy(() -> checkout.scan("X"));
         }
 
     }

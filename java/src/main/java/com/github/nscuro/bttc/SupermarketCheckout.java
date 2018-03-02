@@ -65,7 +65,7 @@ public final class SupermarketCheckout implements Checkout {
         return pricingRules
                 .stream()
                 .map(pricingRule -> pricingRule.apply(itemEntry.getKey(), itemEntry.getValue()))
-                .filter(applications -> !applications.isEmpty())
+                .filter(pricingList -> !pricingList.isEmpty())
                 .flatMap(List::stream)
                 .reduce(new Pricing(0, 0), (left, right) -> {
                     if (itemEntry.getValue() < (left.getAffectedQuantity() + right.getAffectedQuantity())) {

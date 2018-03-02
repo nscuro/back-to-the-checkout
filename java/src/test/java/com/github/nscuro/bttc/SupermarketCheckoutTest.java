@@ -2,6 +2,9 @@ package com.github.nscuro.bttc;
 
 import com.github.nscuro.bttc.item.Item;
 import com.github.nscuro.bttc.item.ItemRepository;
+import com.github.nscuro.bttc.pricing.PricingRule;
+import com.github.nscuro.bttc.pricing.SpecialPricePricingRule;
+import com.github.nscuro.bttc.pricing.UnitPricePricingRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -10,11 +13,14 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
@@ -31,7 +37,13 @@ class SupermarketCheckoutTest {
 
         @BeforeEach
         void beforeEach() {
-            checkout = new SupermarketCheckout(new TestItemRepository());
+            final List<PricingRule> pricingRules = Arrays.asList(
+                    new SpecialPricePricingRule("A", 3, 20),
+                    new SpecialPricePricingRule("B", 2, 15),
+                    new UnitPricePricingRule()
+            );
+
+            checkout = new SupermarketCheckout(new TestItemRepository(), pricingRules);
         }
 
         @DisplayName("should correctly sum up multiple unit prices when no special rules apply")
@@ -106,7 +118,7 @@ class SupermarketCheckoutTest {
         void beforeEach() {
             itemRepositoryMock = mock(ItemRepository.class);
 
-            checkout = new SupermarketCheckout(itemRepositoryMock);
+            checkout = new SupermarketCheckout(itemRepositoryMock, emptyList());
         }
 
         @Test

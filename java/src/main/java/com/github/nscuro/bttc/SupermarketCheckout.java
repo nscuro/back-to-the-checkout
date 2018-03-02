@@ -2,9 +2,12 @@ package com.github.nscuro.bttc;
 
 import com.github.nscuro.bttc.item.Item;
 import com.github.nscuro.bttc.item.ItemRepository;
+import com.github.nscuro.bttc.pricing.Pricing;
+import com.github.nscuro.bttc.pricing.PricingRule;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -15,10 +18,14 @@ public final class SupermarketCheckout implements Checkout {
 
     private final ItemRepository itemRepository;
 
+    private final List<PricingRule> pricingRules;
+
     private final Map<Item, Integer> items;
 
-    public SupermarketCheckout(final ItemRepository itemRepository) {
+    public SupermarketCheckout(final ItemRepository itemRepository,
+                               final List<PricingRule> pricingRules) {
         this.itemRepository = itemRepository;
+        this.pricingRules = pricingRules;
         this.items = new HashMap<>();
     }
 
@@ -36,7 +43,30 @@ public final class SupermarketCheckout implements Checkout {
 
     @Override
     public int getTotalPrice() {
-        return 0;
+        return items
+                .entrySet()
+                .stream()
+                .mapToInt(this::applyPricingRules)
+                .sum();
+    }
+
+    private int applyPricingRules(final Map.Entry<Item, Integer> itemEntry) {
+        return pricingRules
+                .stream()
+                .map(pricingRule -> pricingRule.apply(itemEntry.getKey(), itemEntry.getValue()))
+                .filter(applications -> !applications.isEmpty())
+                .flatMap(List::stream)
+                .reduce(new Pricing(0, 0), (left, right) -> {
+                    if (itemEntry.getValue() < (left.getAffectedQuantity() + right.getAffectedQuantity())) {
+                        return left;
+                    } else {
+                        return new Pricing(
+                                left.getSubTotal() + right.getSubTotal(),
+                                left.getAffectedQuantity() + right.getAffectedQuantity()
+                        );
+                    }
+                })
+                .getSubTotal();
     }
 
     Map<Item, Integer> getItems() {

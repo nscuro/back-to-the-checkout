@@ -108,6 +108,7 @@ class SupermarketCheckoutTest {
     }
 
     @Nested
+    @DisplayName("when scanning a SKU")
     class ScanTest {
 
         private ItemRepository itemRepositoryMock;

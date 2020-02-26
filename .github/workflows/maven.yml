@@ -1,4 +1,4 @@
-name: Java CI
+name: Continuous Integration
 
 on: [push]
 
@@ -16,4 +16,4 @@ jobs:
           java-version: ${{ matrix.java }}
           architecture: x64
       - name: Build with Maven
-        run: mvn -B clean verify
+        run: mvn -f pom.xml -B clean verify

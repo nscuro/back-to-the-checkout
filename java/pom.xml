@@ -23,14 +23,14 @@
 
     <properties>
         <!-- General project properties -->
-        <java.version>1.8</java.version>
+        <java.version>14</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Dependency versions -->
-        <junit-jupiter.version>5.6.0</junit-jupiter.version>
-        <junit-platform.version>1.6.0</junit-platform.version>
-        <assertj.version>3.15.0</assertj.version>
-        <mockito.version>3.3.0</mockito.version>
+        <junit-jupiter.version>5.6.2</junit-jupiter.version>
+        <junit-platform.version>1.6.2</junit-platform.version>
+        <assertj.version>3.16.1</assertj.version>
+        <mockito.version>3.4.2</mockito.version>
 
         <!-- Plugin versions -->
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
